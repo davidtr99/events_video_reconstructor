@@ -1,0 +1,13 @@
+#include <ros/ros.h>
+#include <events_video_reconstructor/events_video_reconstructor.h>
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "events_to_video_reconstructor_node");
+    ros::NodeHandle nh("~");
+
+    event_camera_algorithms::EventsVideoReconstructor events_video_reconstructor(nh);
+    ros::MultiThreadedSpinner spinner(4); 
+    spinner.spin();
+    return 0;
+}
