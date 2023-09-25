@@ -11,9 +11,11 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend>
   <build_depend>dvs_msgs</build_depend>
 
   <exec_depend>roscpp</exec_depend>
+  <exec_depend>roslib</exec_depend>
   <exec_depend>dvs_msgs</exec_depend>
 
   <test_depend>roslint</test_depend>

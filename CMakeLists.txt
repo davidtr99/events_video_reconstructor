@@ -1,11 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(events_video_reconstructor)
-set(CMAKE_CXX_FLAGS "-std=c++14")
-set(LIBTORCH_DIR "/home/dtejero/libtorch")
-find_package(CUDA 11.7 REQUIRED)
-find_package(Torch REQUIRED PATHS ${LIBTORCH_DIR})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
-
+set(CMAKE_CXX_FLAGS "-std=c++17")
 
 # ==== Build type (default: release) ====
 SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
@@ -27,13 +22,14 @@ ENDIF()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   dvs_msgs
+  roslib
 )
 
 # ==== Catkin setup ====
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp dvs_msgs 
+  CATKIN_DEPENDS roscpp dvs_msgs roslib
 )
 
 # ==== Include directories ====
@@ -55,16 +51,23 @@ file(GLOB_RECURSE SRC_HDRS "src/*.h*")
 
 add_library(${PROJECT_NAME} ${SRC_SRCS} ${SRC_HDRS} ${SRC_INCS})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${TORCH_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+# ==== Loading 3rd party libraries ====
+find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
+if(${Python3_FOUND})
+    target_link_libraries(${PROJECT_NAME} PUBLIC Python3::Python)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Python3::NumPy)
+endif(${Python3_FOUND})
+
+find_package(pybind11 CONFIG REQUIRED)
+if(${pybind11_FOUND})
+    target_link_libraries(${PROJECT_NAME} PUBLIC pybind11::headers)
+    target_link_libraries(${PROJECT_NAME} PUBLIC pybind11::embed)
+endif(${pybind11_FOUND})
 
 add_executable(${PROJECT_NAME}_node utils/events_video_reconstructor_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
-
-# Testers
-# add_executable(${PROJECT_NAME}_listener utils/listen_tester.cpp)
-# target_link_libraries(${PROJECT_NAME}_listener ${PROJECT_NAME})
-# add_executable(${PROJECT_NAME}_sender utils/send_tester.cpp)
-# target_link_libraries(${PROJECT_NAME}_sender ${PROJECT_NAME})
 
 # ==== Install ====
 install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
