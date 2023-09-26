@@ -54,7 +54,7 @@ class ImageReconstructor:
         self.image_writer = ImageWriter(options)
         self.image_display = ImageDisplay(options)
 
-    def update_reconstruction(self, event_tensor, event_tensor_id, stamp=None):
+    def update_reconstruction(self, event_tensor, event_tensor_id, stamp=None, show_cv_window=False):
         with torch.no_grad():
 
             with CudaTimer('Reconstruction'):
@@ -79,31 +79,6 @@ class ImageReconstructor:
                     with CudaTimer('Inference'):
                         new_predicted_frame, states = self.model(events_for_each_channel[channel],
                                                                  self.last_states_for_each_channel[channel])
-
-                    # print("Generating model.pt")
-                    # if self.last_states_for_each_channel[channel] is None:
-                    #     print("self.last_states_for_each_channel[channel] is None")
-                    # else:
-                    #     example_input = [events_for_each_channel[channel], self.last_states_for_each_channel[channel]]
-                    #     traced_script_module = torch.jit.trace(self.model, example_input)
-                    #     traced_script_module.save("model.pt")
-                    #     print("model.pt generated!")
-                    #     exit()
-                    print("tensor")
-                    print(events_for_each_channel[channel].shape)
-
-                    print("states")
-                    if self.last_states_for_each_channel[channel] is None:
-                        print("states is None")
-                    else :
-                        for state in self.last_states_for_each_channel[channel]:
-                            print("----")
-                            for st in state:
-                                print("st")
-                                print(st.shape)
-
-
-
                     if self.no_recurrent:
                         self.last_states_for_each_channel[channel] = None
                     else:
@@ -129,6 +104,11 @@ class ImageReconstructor:
 
             # Post-processing, e.g bilateral filter (on CPU)
             out = self.image_filter(out)
+        
+            if show_cv_window:
+                cv2.imshow('Reconstruction',out)
+                cv2.waitKey(1)
+                self.image_writer(out, event_tensor_id, stamp, events=events)
+                self.image_display(out, events)
 
-            self.image_writer(out, event_tensor_id, stamp, events=events)
-            self.image_display(out, events)
+            return out

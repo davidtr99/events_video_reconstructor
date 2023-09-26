@@ -7,6 +7,7 @@
 #include <ros/package.h>
 #include <ros/ros.h>
 #include <ros/transport_hints.h>
+#include <sensor_msgs/Image.h>
 
 #include <iostream>
 #include <string>
@@ -28,6 +29,7 @@ class EventsVideoReconstructor
 
     // Subscribers
     ros::Subscriber                   _events_subscriber;
+    ros::Publisher                    _image_publisher;
     std::unique_ptr<pybind11::object> _online_reconstructor;
 };
 

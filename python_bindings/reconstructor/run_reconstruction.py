@@ -107,6 +107,6 @@ if __name__ == "__main__":
                                                                 device=device)
 
             num_events_in_window = event_window.shape[0]
-            reconstructor.update_reconstruction(event_tensor, start_index + num_events_in_window, last_timestamp)
+            reconstructor.update_reconstruction(event_tensor, start_index + num_events_in_window, last_timestamp, show_cv_window=True)
 
             start_index += num_events_in_window

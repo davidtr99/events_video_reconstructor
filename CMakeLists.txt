@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(events_video_reconstructor)
 set(CMAKE_CXX_FLAGS "-std=c++17")
+find_package(CUDA 11.7 REQUIRED)
 
 # ==== Build type (default: release) ====
 SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
@@ -51,7 +52,7 @@ file(GLOB_RECURSE SRC_HDRS "src/*.h*")
 
 add_library(${PROJECT_NAME} ${SRC_SRCS} ${SRC_HDRS} ${SRC_INCS})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${CUDA_LIBRARIES})
 
 # ==== Loading 3rd party libraries ====
 find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)

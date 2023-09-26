@@ -7,7 +7,6 @@ int main(int argc, char** argv)
     ros::NodeHandle nh("~");
 
     event_camera_algorithms::EventsVideoReconstructor events_video_reconstructor(nh);
-    ros::MultiThreadedSpinner                         spinner(4);
-    spinner.spin();
+    ros::spin();
     return 0;
 }
