@@ -1,0 +1,90 @@
+###################
+# E2VID / FIRENET #
+###################
+
+###################################
+###################################
+# General configuration
+
+# Path to the trained model from "trained/"" folder
+# Available models: firenet_1000.pth.tar, E2VID_lightwheight.pth.tar
+trained_model: firenet_1000.pth.tar
+
+# Use GPU for inference
+use_gpu: True
+
+# Path to store the generated images (if empty, this feature is disabled)
+output_folder: ""
+
+###################################
+###################################
+# CV2 optional display
+
+# Visualize the reconstruction in a cv2 window
+display: False
+
+# Show the events in he display window
+show_events: False
+
+# Event display color mode
+event_display_mode: "red-blue" # 'red-blue' or 'grayscale'
+
+# Number of bins of the voxel grid to show when displaying events (-1 means
+# show all the bins)
+num_bins_to_show: -1
+
+# Remove the outer border of size display_border_crop before displaying
+# image.
+display_border_crop: 0
+
+# Time to wait after each call to cv2.imshow, in milliseconds (default: 1)
+display_wait_time: 1
+
+###################################
+###################################
+# Post-processing / filtering
+
+# (optional) path to a text file containing the locations of hot pixels to
+# ignore
+hot_pixels_file: ""
+
+# (optional) unsharp mask
+unsharp_mask_amount: 0.3
+unsharp_mask_sigma: 1.0
+
+# (optional) bilateral filter
+bilateral_filter_sigma: 0.0
+
+# (optional) flip the event tensors vertically
+flip: False
+
+###################################
+###################################
+# Tone mapping
+
+# Min intensity for intensity rescaling (linear tone mapping)
+Imin: 0.0
+
+# Max intensity for intensity rescaling (linear tone mapping)
+Imax: 1.0
+
+# If True, will compute Imin and Imax automatically
+auto_hdr: True
+
+# Size of the median filter window used to smooth temporally Imin and Imax
+auto_hdr_median_filter_size: 10
+
+# Color reconstruction
+color: False
+
+###################################
+###################################
+# Advanced parameters
+
+# Disable normalization of input event tensors (saves a bit of time, but
+# may produce slightly worse results)
+no_normalize: False
+
+# Disable recurrent connection (will severely degrade the results; for
+# testing purposes only)
+no_recurrent: False

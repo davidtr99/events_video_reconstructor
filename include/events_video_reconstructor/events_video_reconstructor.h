@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#define ROS_TOPIC_BUFFER_SIZE 1
+#define ROS_TOPIC_BUFFER_SIZE 100
 
 namespace event_camera_algorithms {
 
@@ -28,9 +28,13 @@ class EventsVideoReconstructor
     ros::NodeHandle& _nh;
 
     // Subscribers
-    ros::Subscriber                   _events_subscriber;
-    ros::Publisher                    _image_publisher;
+    ros::Subscriber _events_subscriber;
+    ros::Publisher  _image_publisher;
+    ros::Timer      _inference_timer;
+
     std::unique_ptr<pybind11::object> _online_reconstructor;
+    std::vector<dvs_msgs::Event>      _events_buffer;
+    ros::Time                         _last_timestamp;
 };
 
 } // namespace event_camera_algorithms

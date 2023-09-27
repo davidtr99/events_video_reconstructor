@@ -11,6 +11,8 @@ import os
 import rospy
 from cv_bridge import CvBridge
 import torch
+import time
+from dvs_msgs.msg import Event
 
 class online_reconstructor:
     def __init__(self) -> None:
@@ -38,19 +40,22 @@ class online_reconstructor:
         
         self.reconstructor = ImageReconstructor(self.__model, 480, 640, 5, self.args)
 
-    def process_events(self, events):
-        event_window = np.zeros((4, len(events)))
-        for i, event in enumerate(events):
-            event_window[0, i] = event["t"]
-            event_window[1, i] = event["x"]
-            event_window[2, i] = event["y"]
-            event_window[3, i] = event["p"]
-
+    def process_events(self, events_x, events_y, events_ts, events_p):
+        event_window = np.zeros((4, len(events_x)))
+        event_window[0, :] = events_ts
+        event_window[1, :] = events_x
+        event_window[2, :] = events_y
+        event_window[3, :] = events_p
         last_timestamp = event_window[0, -1]
-
+        
         voxel_grid = events_to_voxel_grid_pytorch(event_window.T, num_bins=5, width=640, height=480, device=self.__device)
         out = self.reconstructor.update_reconstruction(voxel_grid, self.index, last_timestamp)
         self.index += 1
         return out
+    
+
+    def catch_events(self, events):
+        print(f"Received {len(events)} events")
+        print(events[0])
 
 
