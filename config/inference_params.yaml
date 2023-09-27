@@ -4,7 +4,7 @@
 
 ###################################
 ###################################
-# General configuration
+# GENERAL CONFIGURATION
 
 # Path to the trained model from "trained/"" folder
 # Available models: firenet_1000.pth.tar, E2VID_lightwheight.pth.tar
@@ -16,9 +16,13 @@ use_gpu: True
 # Path to store the generated images (if empty, this feature is disabled)
 output_folder: ""
 
+# Input / Output Resolution (pixels)
+camera_width: 640
+camera_height: 480
+
 ###################################
 ###################################
-# CV2 optional display
+# CV2 OPTIONAL DISPLAY
 
 # Visualize the reconstruction in a cv2 window
 display: False
@@ -42,7 +46,7 @@ display_wait_time: 1
 
 ###################################
 ###################################
-# Post-processing / filtering
+# POST-PROCESSING / FILTERING
 
 # (optional) path to a text file containing the locations of hot pixels to
 # ignore
@@ -60,7 +64,7 @@ flip: False
 
 ###################################
 ###################################
-# Tone mapping
+# TONE MAPPING
 
 # Min intensity for intensity rescaling (linear tone mapping)
 Imin: 0.0
@@ -79,7 +83,7 @@ color: False
 
 ###################################
 ###################################
-# Advanced parameters
+# ADVANCED OPTIONS
 
 # Disable normalization of input event tensors (saves a bit of time, but
 # may produce slightly worse results)

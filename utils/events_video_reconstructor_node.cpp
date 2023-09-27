@@ -7,6 +7,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh("~");
 
     event_camera_algorithms::EventsVideoReconstructor events_video_reconstructor(nh);
+    ROS_INFO("\033[1;32m--> Events Video Reconstructor Node Started.\033[0m");
     ros::spin();
     return 0;
 }

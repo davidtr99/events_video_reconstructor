@@ -13,6 +13,7 @@ import atexit
 import scipy.stats as st
 import torch.nn.functional as F
 from math import sqrt
+import time
 
 
 def make_event_preview(events, mode='red-blue', num_bins_to_show=-1):
@@ -63,21 +64,21 @@ class EventPreprocessor:
     def __init__(self, options):
 
         print('== Event preprocessing ==')
-        self.no_normalize = options.no_normalize
+        self.no_normalize = options["no_normalize"]
         if self.no_normalize:
             print('!!Will not normalize event tensors!!')
         else:
             print('Will normalize event tensors.')
 
         self.hot_pixel_locations = []
-        if options.hot_pixels_file:
+        if options["hot_pixels_file"]:
             try:
-                self.hot_pixel_locations = np.loadtxt(options.hot_pixels_file, delimiter=',').astype(np.int64)
+                self.hot_pixel_locations = np.loadtxt(options["hot_pixels_file"], delimiter=',').astype(np.int64)
                 print('Will remove {} hot pixels'.format(self.hot_pixel_locations.shape[0]))
             except IOError:
-                print('WARNING: could not load hot pixels file: {}'.format(options.hot_pixels_file))
+                print('WARNING: could not load hot pixels file: {}'.format(options["hot_pixels_file"]))
 
-        self.flip = options.flip
+        self.flip = options["flip"]
         if self.flip:
             print('Will flip event tensors.')
 
@@ -117,11 +118,11 @@ class IntensityRescaler:
     """
 
     def __init__(self, options):
-        self.auto_hdr = options.auto_hdr
+        self.auto_hdr = options["auto_hdr"]
         self.intensity_bounds = deque()
-        self.auto_hdr_median_filter_size = options.auto_hdr_median_filter_size
-        self.Imin = options.Imin
-        self.Imax = options.Imax
+        self.auto_hdr_median_filter_size = options["auto_hdr_median_filter_size"]
+        self.Imin = options["Imin"]
+        self.Imax = options["Imax"]
 
     def __call__(self, img):
         """
@@ -160,11 +161,14 @@ class ImageWriter:
 
     def __init__(self, options):
 
-        self.output_folder = options.output_folder
-        self.dataset_name = options.dataset_name
-        self.save_events = options.show_events
-        self.event_display_mode = options.event_display_mode
-        self.num_bins_to_show = options.num_bins_to_show
+        self.output_folder = options["output_folder"]
+        self.save_events = options["show_events"]
+        self.event_display_mode = options["event_display_mode"]
+        self.num_bins_to_show = options["num_bins_to_show"]
+
+        timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+        self.dataset_name = timestamp + '_reconstruction'
+
         print('== Image Writer ==')
         if self.output_folder:
             ensure_dir(self.output_folder)
@@ -207,11 +211,11 @@ class ImageDisplay:
     """
 
     def __init__(self, options):
-        self.display = options.display
-        self.show_events = options.show_events
-        self.color = options.color
-        self.event_display_mode = options.event_display_mode
-        self.num_bins_to_show = options.num_bins_to_show
+        self.display = options["display"]
+        self.show_events = options["show_events"]
+        self.color = options["color"]
+        self.event_display_mode = options["event_display_mode"]
+        self.num_bins_to_show = options["num_bins_to_show"]
 
         self.window_name = 'Reconstruction'
         if self.show_events:
@@ -220,8 +224,8 @@ class ImageDisplay:
         if self.display:
             cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
 
-        self.border = options.display_border_crop
-        self.wait_time = options.display_wait_time
+        self.border = options["display_border_crop"]
+        self.wait_time = options["display_wait_time"]
 
     def crop_outer_border(self, img, border):
         if self.border == 0:
@@ -263,8 +267,8 @@ class UnsharpMaskFilter:
     """
 
     def __init__(self, options, device):
-        self.unsharp_mask_amount = options.unsharp_mask_amount
-        self.unsharp_mask_sigma = options.unsharp_mask_sigma
+        self.unsharp_mask_amount = options["unsharp_mask_amount"]
+        self.unsharp_mask_sigma = options["unsharp_mask_sigma"]
         self.gaussian_kernel_size = 5
         self.gaussian_kernel = gkern(self.gaussian_kernel_size,
                                      self.unsharp_mask_sigma).unsqueeze(0).unsqueeze(0).to(device)
@@ -284,7 +288,7 @@ class ImageFilter:
     """
 
     def __init__(self, options):
-        self.bilateral_filter_sigma = options.bilateral_filter_sigma
+        self.bilateral_filter_sigma = options["bilateral_filter_sigma"]
 
     def __call__(self, img):
 

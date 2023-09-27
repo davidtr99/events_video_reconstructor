@@ -23,18 +23,26 @@ class EventsVideoReconstructor
     EventsVideoReconstructor(ros::NodeHandle& nh);
     virtual ~EventsVideoReconstructor();
 
-  public:
   private:
+    void runInference(const std::vector<dvs_msgs::Event>& input_events, pybind11::object& output_object);
+    void generateRosImageMsg(const pybind11::object& input_object, sensor_msgs::Image& output_image_msg);
+    void publishReconstructedImage(sensor_msgs::Image& image_msg);
+    void initializePythonObjects();
+
+  private:
+    // ROS communication
     ros::NodeHandle& _nh;
+    ros::Subscriber  _events_subscriber;
+    ros::Publisher   _image_publisher;
+    ros::Timer       _inference_timer;
 
-    // Subscribers
-    ros::Subscriber _events_subscriber;
-    ros::Publisher  _image_publisher;
-    ros::Timer      _inference_timer;
-
+    // Python online reconstructior
     std::unique_ptr<pybind11::object> _online_reconstructor;
-    std::vector<dvs_msgs::Event>      _events_buffer;
-    ros::Time                         _last_timestamp;
+
+    // Data
+    std::vector<dvs_msgs::Event> _events_buffer;
+    ros::Time                    _last_timestamp;
+    std::string                  _events_frame_id;
 };
 
 } // namespace event_camera_algorithms

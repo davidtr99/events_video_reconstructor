@@ -15,7 +15,7 @@ class ImageReconstructor:
     def __init__(self, model, height, width, num_bins, options):
 
         self.model = model
-        self.use_gpu = options.use_gpu
+        self.use_gpu = options["use_gpu"]
         self.device = torch.device('cuda:0') if self.use_gpu else torch.device('cpu')
         self.height = height
         self.width = width
@@ -27,15 +27,15 @@ class ImageReconstructor:
         print('== Image reconstruction == ')
         print('Image size: {}x{}'.format(self.height, self.width))
 
-        self.no_recurrent = options.no_recurrent
+        self.no_recurrent = options["no_recurrent"]
         if self.no_recurrent:
             print('!!Recurrent connection disabled!!')
 
-        self.perform_color_reconstruction = options.color  # whether to perform color reconstruction (only use this with the DAVIS346color)
+        self.perform_color_reconstruction = options["color"]  # whether to perform color reconstruction (only use this with the DAVIS346color)
         if self.perform_color_reconstruction:
-            if options.auto_hdr:
+            if options["auto_hdr"]:
                 print('!!Warning: disabling auto HDR for color reconstruction!!')
-            options.auto_hdr = False  # disable auto_hdr for color reconstruction (otherwise, each channel will be normalized independently)
+            options["auto_hdr"] = False  # disable auto_hdr for color reconstruction (otherwise, each channel will be normalized independently)
 
         self.crop = CropParameters(self.width, self.height, self.model.num_encoders)
 
