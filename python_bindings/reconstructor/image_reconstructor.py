@@ -102,13 +102,11 @@ class ImageReconstructor:
                 else:
                     out = reconstructions_for_each_channel['grayscale']
 
+            self.image_writer(out, event_tensor_id, stamp, events=events)
+            self.image_display(out, events)
+            
             # Post-processing, e.g bilateral filter (on CPU)
             out = self.image_filter(out)
         
-            if show_cv_window:
-                cv2.imshow('Reconstruction',out)
-                cv2.waitKey(1)
-                self.image_writer(out, event_tensor_id, stamp, events=events)
-                self.image_display(out, events)
 
             return out
