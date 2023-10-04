@@ -12,10 +12,10 @@ EventsVideoReconstructor::EventsVideoReconstructor(ros::NodeHandle& nh) : _nh(nh
     std::string video_topic;
     _nh.param<std::string>("video_topic", video_topic, "/dvs/video");
 
-    float inference_rate;
-    _nh.param<float>("inference_rate", inference_rate, 10.0);
+    float output_frequency;
+    _nh.param<float>("output_frequency", output_frequency, 10.0);
 
-    _inference_timer = _nh.createTimer(ros::Duration(1.0 / inference_rate), [&](const ros::TimerEvent& timer_event) {
+    _inference_timer = _nh.createTimer(ros::Duration(1.0 / output_frequency), [&](const ros::TimerEvent& timer_event) {
         ROS_DEBUG("[EventsVideoReconstructor::inference_timer]");
         if (_events_buffer.empty())
             return;
