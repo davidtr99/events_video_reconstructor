@@ -50,7 +50,7 @@ display_wait_time: 1
 
 # (optional) path to a text file containing the locations of hot pixels to
 # ignore
-hot_pixels_file: ""
+hot_pixels_file: "hot_pixels.txt"
 
 # (optional) unsharp mask
 unsharp_mask_amount: 0.3

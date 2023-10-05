@@ -14,6 +14,7 @@ import scipy.stats as st
 import torch.nn.functional as F
 from math import sqrt
 import time
+import os
 
 
 def make_event_preview(events, mode='red-blue', num_bins_to_show=-1):
@@ -73,6 +74,10 @@ class EventPreprocessor:
         self.hot_pixel_locations = []
         if options["hot_pixels_file"]:
             try:
+                pkg_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                if options["hot_pixels_file"][0] != '/':
+                    options["hot_pixels_file"] = pkg_path + '/' + options["hot_pixels_file"]
+
                 self.hot_pixel_locations = np.loadtxt(options["hot_pixels_file"], delimiter=',').astype(np.int64)
                 print('Will remove {} hot pixels'.format(self.hot_pixel_locations.shape[0]))
             except IOError:
