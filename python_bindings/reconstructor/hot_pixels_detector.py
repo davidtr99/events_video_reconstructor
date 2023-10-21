@@ -21,24 +21,39 @@ def callback(msg):
     global events_subscriber
 
     if callback_counter == 0:
-        rospy.Timer(rospy.Duration(TIME_RECOLECTION_SECS), calculate_hot_pixels, oneshot=True)
-        rospy.loginfo("\033[1;34m--> Starting to collect events ({} secs)...\033[0m".format(TIME_RECOLECTION_SECS))
+        rospy.Timer(
+            rospy.Duration(TIME_RECOLECTION_SECS), calculate_hot_pixels, oneshot=True
+        )
+        rospy.loginfo(
+            "\033[1;34m--> Starting to collect events ({} secs)...\033[0m".format(
+                TIME_RECOLECTION_SECS
+            )
+        )
 
     for event in msg.events:
         counter_matrix[event.y, event.x] += 1
 
     callback_counter += 1
 
+
 def calculate_hot_pixels(time_event):
     global events_subscriber
     global counter_matrix
 
     events_subscriber.unregister()
-    rospy.loginfo("\033[1;32m--> Calculating Hot Pixels with {} packets...\033[0m".format(callback_counter))
+    rospy.loginfo(
+        "\033[1;32m--> Calculating Hot Pixels with {} packets...\033[0m".format(
+            callback_counter
+        )
+    )
 
     # min / max normalization
-    rospy.loginfo("Min: {}, Max: {}".format(np.min(counter_matrix), np.max(counter_matrix)))
-    counter_matrix = (counter_matrix - np.min(counter_matrix)) / (np.max(counter_matrix) - np.min(counter_matrix))
+    rospy.loginfo(
+        "Min: {}, Max: {}".format(np.min(counter_matrix), np.max(counter_matrix))
+    )
+    counter_matrix = (counter_matrix - np.min(counter_matrix)) / (
+        np.max(counter_matrix) - np.min(counter_matrix)
+    )
 
     # thresholding
     hot_pixels = np.where(counter_matrix > THRESHOLD)
@@ -51,10 +66,14 @@ def calculate_hot_pixels(time_event):
     img[:, :, 2] = counter_matrix * 255
     for i in range(len(hot_pixels[0])):
         cv2.circle(img, (hot_pixels[1][i], hot_pixels[0][i]), 2, (0, 0, 255), -1)
-    
+
     # save hot pixels
     script_path = os.path.dirname(os.path.abspath(__file__))
-    rospy.loginfo("\033[1;32m--> Hot Pixels saved in {}.\033[0m".format(script_path + "/hot_pixels.txt"))
+    rospy.loginfo(
+        "\033[1;32m--> Hot Pixels saved in {}.\033[0m".format(
+            script_path + "/hot_pixels.txt"
+        )
+    )
     hot_pixels_file = open(script_path + "/hot_pixels.txt", "w")
     for i in range(len(hot_pixels[0])):
         print("{},{}".format(hot_pixels[1][i], hot_pixels[0][i]))
@@ -69,20 +88,21 @@ def calculate_hot_pixels(time_event):
     rospy.loginfo("\033[1;32m--> Hot Pixels Detector Node Finished.\033[0m")
     rospy.signal_shutdown("Hot Pixels Detector Node Finished.")
 
+
 def main():
     global events_subscriber
     global timer
     rospy.init_node("hot_pixels_detector")
-    events_subscriber = rospy.Subscriber(EVENTS_TOPIC, EventArray, callback, queue_size=1000)
-
+    events_subscriber = rospy.Subscriber(
+        EVENTS_TOPIC, EventArray, callback, queue_size=1000
+    )
 
     rospy.loginfo("\033[1;32m--> Hot Pixels Detector Node Started.\033[0m")
-    rospy.loginfo("\033[1;34m--> Place in a static environment and don't move the camera!\033[0m")
+    rospy.loginfo(
+        "\033[1;34m--> Place in a static environment and don't move the camera!\033[0m"
+    )
     rospy.spin()
 
 
 if __name__ == "__main__":
     main()
-
-
-
