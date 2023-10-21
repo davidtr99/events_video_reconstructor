@@ -56,7 +56,7 @@ def main(args):
 
     # Torch configuration: use GPU or CPU
     torch.cuda.empty_cache()
-    device = get_device(use_gpu=False)
+    device = get_device(use_gpu=True)
 
     # Initialize the dataset and the data loader
     event_dataset = EventDataset(
