@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from skimage.metrics import mean_squared_error, structural_similarity
-from utils.loading_utils import load_model, get_device
+from utils.loading_utils import load_model, get_device, load_raw_model
 from torch.utils.data import DataLoader, Dataset
 from model.model import *
 
@@ -64,7 +64,7 @@ def main(args):
     train_loader = DataLoader(event_dataset, batch_size=1, shuffle=True)
 
     # Load pretrained model and move it to the GPU
-    model = load_model("pretrained/firenet_1000.pth.tar")
+    model = load_model(args.pretrained_model)
     model = model.to(device).train()
 
     # Ensure that all the parameters are trainable
@@ -105,11 +105,12 @@ def main(args):
                     f"Epoch [{e}/{args.epochs}], Sequence [{i+1}/{len(train_loader)}], Frame [{ii+1}/{len(x_seq)}] - Inference")
 
                 # Show the output
-                y_viz = y_seq[ii].squeeze().detach().numpy()
-                output_viz = output.squeeze().squeeze().cpu().detach().numpy()
-                cv2.imshow("Reconstructed vs Ground Truth", np.hstack(
-                    (y_viz, output_viz)))
-                cv2.waitKey(1)
+                if args.show:
+                    y_viz = y_seq[ii].squeeze().detach().numpy()
+                    output_viz = output.squeeze().squeeze().cpu().detach().numpy()
+                    cv2.imshow("Reconstructed vs Ground Truth", np.hstack(
+                        (y_viz, output_viz)))
+                    cv2.waitKey(1)
 
             # Compute the loss
             y = y_seq[-1].unsqueeze(1).to(device)
@@ -162,6 +163,9 @@ def main(args):
                 best_epoch+1, best_mean_ssim))
 
     # Save the trained model
+    raw_model = load_raw_model("pretrained/firenet_1000.pth.tar")
+    raw_model["state_dict"] = model.state_dict()
+    torch.save(raw_model, "fine_tuned/firenet_finetuned_full_raw.pth")
     torch.save(model.state_dict(), "fine_tuned/firenet_finetuned_full.pth")
 
 if __name__ == "__main__":

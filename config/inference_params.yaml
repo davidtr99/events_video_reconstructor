@@ -7,8 +7,8 @@
 # GENERAL CONFIGURATION
 
 # Path to the trained model from "trained/"" folder
-# Available models: firenet_1000.pth.tar, E2VID_lightweight.pth.tar
-trained_model: "firenet_1000.pth.tar"
+# Available models: firenet_1000.pth.tar, E2VID_lightweight.pth.tar, firenet_finetuned.pth
+trained_model: "firenet_finetuned.pth"
 
 # Use GPU for inference
 use_gpu: True

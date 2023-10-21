@@ -214,5 +214,7 @@ def arg_parser():
                         help="Number of sequences", default=50)
     parser.add_argument("--n_noise_events", type=int,
                         help="Number of noise events", default=0)
+    parser.add_argument("--show", type=bool,
+                        help="Show images", default=False)
     args = parser.parse_args()
     return args
