@@ -43,6 +43,7 @@ class EventsVideoReconstructor
     std::vector<dvs_msgs::Event> _events_buffer;
     ros::Time                    _last_timestamp;
     std::string                  _events_frame_id;
+    float                        _output_frequency;
 };
 
 } // namespace event_camera_algorithms

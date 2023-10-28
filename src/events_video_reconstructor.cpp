@@ -12,23 +12,26 @@ EventsVideoReconstructor::EventsVideoReconstructor(ros::NodeHandle& nh) : _nh(nh
     std::string video_topic;
     _nh.param<std::string>("video_topic", video_topic, "/dvs/video");
 
-    float output_frequency;
-    _nh.param<float>("output_frequency", output_frequency, 10.0);
+    _nh.param<float>("output_frequency", _output_frequency, 10.0);
 
-    _inference_timer = _nh.createTimer(ros::Duration(1.0 / output_frequency), [&](const ros::TimerEvent& timer_event) {
-        ROS_DEBUG("[EventsVideoReconstructor::inference_timer]");
-        if (_events_buffer.empty())
-            return;
+    if (_output_frequency > 0.0)
+    {
+        _inference_timer = _nh.createTimer(ros::Duration(1.0 / _output_frequency), [&](const ros::TimerEvent& timer_event) {
+            ROS_DEBUG("[EventsVideoReconstructor::inference_timer]");
+            if (_events_buffer.empty())
+                return;
 
-        pybind11::object output;
-        runInference(_events_buffer, output);
-        ROS_INFO_ONCE("\033[1;34m--> Neural Network Initialized! Running!.\033[0m");
-        _events_buffer.clear();
+            pybind11::object output;
+            runInference(_events_buffer, output);
+            ROS_INFO_ONCE("\033[1;34m--> Neural Network Initialized! Running!.\033[0m");
+            _events_buffer.clear();
 
-        sensor_msgs::Image image_msg;
-        generateRosImageMsg(output, image_msg);
-        publishReconstructedImage(image_msg);
-    });
+            sensor_msgs::Image image_msg;
+            generateRosImageMsg(output, image_msg);
+            publishReconstructedImage(image_msg);
+        });
+    }
+
 
     _events_subscriber = _nh.subscribe<dvs_msgs::EventArray>(
             events_topic,
@@ -40,9 +43,21 @@ EventsVideoReconstructor::EventsVideoReconstructor(ros::NodeHandle& nh) : _nh(nh
                 _events_buffer.insert(_events_buffer.end(), msg->events.begin(), msg->events.end());
                 _last_timestamp  = msg->events.back().ts;
                 _events_frame_id = msg->header.frame_id;
-            },
-            ros::VoidConstPtr(),
-            ros::TransportHints().tcpNoDelay());
+
+                if (_output_frequency > 0.0)
+                    return;
+
+                pybind11::object output;
+                runInference(_events_buffer, output);
+                ROS_INFO_ONCE("\033[1;34m--> Neural Network Initialized! Running!.\033[0m");
+                _events_buffer.clear();
+
+                sensor_msgs::Image image_msg;
+                generateRosImageMsg(output, image_msg);
+                publishReconstructedImage(image_msg);
+                },
+                ros::VoidConstPtr(),
+                ros::TransportHints().tcpNoDelay());
 
     _image_publisher = _nh.advertise<sensor_msgs::Image>(video_topic, ROS_TOPIC_BUFFER_SIZE);
     initializePythonObjects();
