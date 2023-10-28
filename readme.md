@@ -45,3 +45,6 @@ To detect the hot pixels in the event stream, you can simply run:
 
 ```
 Please, point to a static scene and don't move the camera during this process. A hot_pixels.txt file will be generated in the correct location to be used by the network.
+
+### Network architecture
+The network architecture is FireNet. The inner code of the model is forked of [FirNet Repository](https://github.com/cedric-scheerlinck/rpg_e2vid/tree/cedric/firenet).
