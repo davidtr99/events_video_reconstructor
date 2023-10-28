@@ -11,47 +11,6 @@ import cv2
 
 from fine_tuning_utils import EventDataset, ReconstructionLoss, arg_parser
 
-# Define a custom dataset class
-
-
-class CustomDataset(Dataset):
-    def __init__(self, data_path, transform=None):
-        # Load your data or initialize here
-        # Replace with your data loading logic
-        self.data = torch.randn(3, 5, 640, 480)
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        sample = self.data[idx]
-
-        if self.transform:
-            sample = self.transform(sample)
-
-        return sample
-
-
-class CoderDecoder(nn.Module):
-    def __init__(self):
-        super(CoderDecoder, self).__init__()
-        # Encoder
-        self.encoder = nn.Sequential(
-            nn.Conv2d(5, 64, kernel_size=3,
-                      padding=1), nn.ReLU(), nn.MaxPool2d(2, 2)
-        )
-        # Decoder
-        self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(64, 5, kernel_size=4, stride=2, padding=1)
-        )
-
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
-
-
 def main(args):
 
     # Torch configuration: use GPU or CPU
