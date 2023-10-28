@@ -1,5 +1,5 @@
 # Events Video Reconstructor
-This package implements a ROS node which subscribes to a event topic and reconstructs the video from the events. The ROS node is implemented in C++ and the network inference is developed in Python using PyTorch. It also has utils to fine tune the network with a custom dataset and to detect the hot pixels noisy events in the event stream.
+This package implements a ROS node which subscribes to an event topic and reconstructs the video from the events. The ROS node is implemented in C++ and the network inference is developed in Python using PyTorch. It also has utils to fine tune the network with a custom dataset and to detect the hot pixels noisy events in the event stream.
 
 ## Dependencies
 * ROS Noetic
