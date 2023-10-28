@@ -35,6 +35,7 @@ The dataset argument must point to a folder with CSV files containing the events
 
 You can see a description of the arguments running:
 ```
+    cd python_bindings/reconstructor/
     python3 fine_tuning.py --help
 ```
 
