@@ -1,0 +1,17 @@
+<launch>
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find events_video_reconstructor)/config/rosconsole.conf"/>
+
+    <!--"Topic where the events will be received from" -->
+    <arg name="events_topic" default="/dvs/events" />
+    <!--"Topic where the reconstructed video will be published" -->   
+    <arg name="video_topic" default="/dvs/reconstructed_image" />
+    <!--"Output frequency in Hz (constrained by the inference time )" -->
+    <arg name="output_frequency" default="-1"/>
+
+    <node name="events_video_reconstructor_node" pkg="events_video_reconstructor" type="events_video_reconstructor_node" output="screen">
+        <param name="events_topic"     value="$(arg events_topic)" />
+        <param name="video_topic"      value="$(arg video_topic)" />
+        <param name="output_frequency" value="$(arg output_frequency)" />
+    </node>
+
+</launch>
